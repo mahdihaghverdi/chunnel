@@ -1,0 +1,34 @@
+services:
+    ch.receiver:
+        container_name: ch.receiver
+        build:
+            context: .
+            dockerfile: Dockerfile
+        environment:
+            A_IP: 172.20.1.1
+            B_IP: 172.20.1.2
+        networks:
+            static-network:
+                ipv4_address: 172.20.1.2
+        command: ["python", "receiver.py"]
+
+    ch.sender:
+        container_name: ch.sender
+        build:
+            context: .
+            dockerfile: Dockerfile
+        environment:
+            A_IP: 172.20.1.1
+            B_IP: 172.20.1.2
+        networks:
+            static-network:
+                ipv4_address: 172.20.1.1
+        command: ["python", "sender.py"]
+        depends_on:
+            - ch.receiver
+networks:
+    static-network:
+       driver: bridge
+       ipam:
+           config:
+               - subnet: 172.20.0.0/16
